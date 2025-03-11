@@ -42776,7 +42776,7 @@ s=p}while(true)switch(s){case 0:p=4
 k=t.N
 j=t.z
 s=7
-return A.A(n.eh("POST","/tournaments//join/",A.a1(["invite_code",a],k,j)),$async$AZ)
+return A.A(n.eh("POST","/tournaments/+join/",A.a1(["invite_code",a],k,j)),$async$AZ)
 case 7:m=c
 if(m!=null&&t.P.b(m)){k=A.a1(["success",!0,"result",m],k,j)
 q=k
