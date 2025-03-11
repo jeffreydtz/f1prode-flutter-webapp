@@ -14,7 +14,7 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
-  <base href="/">
+  <base href="/f1prodeflutter/">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
@@ -34,7 +34,7 @@
 
   <script>
     // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = "3532413315";
+    const serviceWorkerVersion = '"1995403620"';
   </script>
   <!-- This script adds the flutter initialization JS code -->
   <script src="flutter.js" defer></script>
@@ -51,34 +51,32 @@
       return null;
     }
 
-    window.addEventListener('load', function(ev) {
+    window.addEventListener('load', async function() {
       console.log('Iniciando carga de Flutter...');
-      
-      // Intentar obtener la ruta inicial
-      var initialRoute = handleDeepLink();
-      console.log('Ruta inicial:', initialRoute);
 
-      // Initialize Flutter
-      _flutter.loader.loadEntrypoint({
-        serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
-        },
-        onEntrypointLoaded: async function(engineInitializer) {
-          let appRunner;
-          try {
-            console.log('Inicializando motor de Flutter...');
-            appRunner = await engineInitializer.initializeEngine({
-              hostElement: document.querySelector('#flutter_app'),
-              initialRoute: initialRoute
-            });
-            
-            console.log('Ejecutando aplicación Flutter...');
-            await appRunner.runApp();
-          } catch (e) {
-            console.error('Error al inicializar Flutter:', e);
-          }
-        }
-      });
+      try {
+        // Obtener la ruta inicial
+        const initialRoute = handleDeepLink();
+        console.log('Ruta inicial:', initialRoute);
+
+        // Inicializar Flutter
+        await flutter.load({
+          serviceWorker: {
+            serviceWorkerVersion: serviceWorkerVersion,
+          },
+        });
+
+        // Configurar y ejecutar la aplicación
+        const engineInitializer = await flutter.initializeEngine({
+          hostElement: document.querySelector('#flutter_app'),
+          initialRoute: initialRoute,
+        });
+
+        console.log('Ejecutando aplicación Flutter...');
+        await engineInitializer.autoStart();
+      } catch (e) {
+        console.error('Error al inicializar Flutter:', e);
+      }
     });
 
     // Manejar cambios en la URL después de que la app está cargada
