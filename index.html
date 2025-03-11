@@ -34,32 +34,56 @@
 
   <script>
     // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = "2106399658";
+    const serviceWorkerVersion = "2022921874";
   </script>
+  <!-- This script adds the flutter initialization JS code -->
   <script src="flutter.js" defer></script>
   <script>
-    window.addEventListener('load', function() {
-      // Interceptar la navegación antes de que Flutter se inicialice
-      var initialPath = window.location.href;
-      console.log('URL inicial:', initialPath);
+    // Función para manejar rutas profundas
+    function handleDeepLink() {
+      console.log('Manejando deep link...');
+      var hash = window.location.hash;
+      if (hash && hash.includes('reset-password')) {
+        console.log('URL de reset password detectada:', hash);
+        // La ruta ya está en el formato correcto con #
+        return hash;
+      }
+      return null;
+    }
 
+    window.addEventListener('load', function(ev) {
+      console.log('Iniciando carga de Flutter...');
+      
+      // Intentar obtener la ruta inicial
+      var initialRoute = handleDeepLink();
+      console.log('Ruta inicial:', initialRoute);
+
+      // Initialize Flutter
       _flutter.loader.loadEntrypoint({
         serviceWorker: {
           serviceWorkerVersion: serviceWorkerVersion,
         },
         onEntrypointLoaded: async function(engineInitializer) {
-          const appRunner = await engineInitializer.initializeEngine({
-            hostElement: document.querySelector('#flutter_app'),
-            renderer: 'html'
-          });
-          
-          // Ejecutar la aplicación después de la inicialización
-          await appRunner.runApp();
-          
-          // Manejar la ruta inicial después de que Flutter esté listo
-          console.log('Flutter inicializado, procesando ruta:', window.location.hash);
+          let appRunner;
+          try {
+            console.log('Inicializando motor de Flutter...');
+            appRunner = await engineInitializer.initializeEngine({
+              hostElement: document.querySelector('#flutter_app'),
+              initialRoute: initialRoute
+            });
+            
+            console.log('Ejecutando aplicación Flutter...');
+            await appRunner.runApp();
+          } catch (e) {
+            console.error('Error al inicializar Flutter:', e);
+          }
         }
       });
+    });
+
+    // Manejar cambios en la URL después de que la app está cargada
+    window.addEventListener('hashchange', function() {
+      console.log('Hash changed:', window.location.hash);
     });
   </script>
 </head>
