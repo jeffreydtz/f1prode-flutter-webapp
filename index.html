@@ -30,6 +30,18 @@
 
   <title>f1prodeflutter</title>
   <link rel="manifest" href="manifest.json">
+
+  <script>
+    // Esta función maneja la redirección para rutas profundas
+    window.addEventListener('load', function(ev) {
+      // Detectar si hay un hash en la URL
+      var hash = window.location.hash;
+      if (hash && hash.startsWith('#/reset-password/')) {
+        console.log('Detectada ruta de restablecimiento de contraseña:', hash);
+        // El hash ya está en el formato correcto, no necesita modificación
+      }
+    });
+  </script>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>
