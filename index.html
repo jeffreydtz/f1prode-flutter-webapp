@@ -14,7 +14,7 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
-  <base href="/">
+  <base href="/f1prode-flutter-webapp/">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
@@ -100,7 +100,7 @@
 
   <script>
     // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = "2119070729";
+    const serviceWorkerVersion = "3017509296";
   </script>
   
   <!-- Carga el script de flutter.js con verificación de carga -->
@@ -126,46 +126,152 @@
       console.log(mensaje);
     }
     
-    // Primero verificamos que el script de flutter.js esté cargado correctamente
-    document.addEventListener("DOMContentLoaded", function() {
-      mostrarDebug('DOM cargado, verificando flutter.js...');
+    document.addEventListener('DOMContentLoaded', function() {
+      mostrarDebug('DOM cargado. Iniciando aplicación...');
       
-      // Mostrar un indicador de carga
+      // Crear indicador de carga
+      mostrarIndicadorCarga();
+      
+      // Detectar la URL base para cargar recursos correctamente
+      var baseUrl = detectarURLBase();
+      mostrarDebug('URL base detectada: ' + baseUrl);
+      
+      // Intentar cargar flutter.js
+      cargarFlutterJS(baseUrl);
+    });
+
+    function mostrarIndicadorCarga() {
       var loadingIndicator = document.createElement('div');
       loadingIndicator.className = 'loading-indicator';
       loadingIndicator.innerHTML = '<div class="loading-spinner"></div><p>Cargando F1 Prode...</p>';
       document.getElementById('flutter_app').appendChild(loadingIndicator);
       
-      // Cargamos el script dinámicamente
-      var scriptTag = document.createElement('script');
-      scriptTag.src = "flutter.js";
-      scriptTag.type = "application/javascript";
-      
-      // Cuando el script cargue correctamente
-      scriptTag.onload = function() {
-        mostrarDebug('flutter.js cargado correctamente');
-        // Iniciar la aplicación
-        iniciarFlutter();
-      };
-      
-      // Si hay un error al cargar el script
-      scriptTag.onerror = function() {
-        mostrarDebug('Error al cargar flutter.js. Intentando con ruta absoluta...');
-        
-        // Intento con ruta absoluta
-        var basePath = window.location.origin + window.location.pathname;
-        if (!basePath.endsWith('/')) {
-          basePath += '/';
+      // Actualizar los estilos por si no se cargaron correctamente desde el CSS
+      var style = document.createElement('style');
+      style.textContent = `
+        .loading-indicator {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100vh;
+          font-family: Arial, sans-serif;
+          color: #E10600; /* Color rojo F1 */
         }
+        .loading-spinner {
+          border: 4px solid rgba(225, 6, 0, 0.3); /* Color rojo F1 con transparencia */
+          border-radius: 50%;
+          border-top: 4px solid #E10600; /* Color rojo F1 */
+          width: 50px;
+          height: 50px;
+          animation: spin 1s linear infinite;
+          margin-bottom: 20px;
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    function detectarURLBase() {
+      var scriptSrc = document.querySelector('script[src*="flutter.js"]');
+      
+      if (scriptSrc) {
+        var src = scriptSrc.getAttribute('src');
+        var baseUrl = src.substring(0, src.indexOf('flutter.js'));
+        mostrarDebug('URL base encontrada desde script: ' + baseUrl);
+        return baseUrl;
+      }
+      
+      // Intentar detectar desde base href
+      var baseHref = document.querySelector('base')?.getAttribute('href');
+      if (baseHref) {
+        // Asegurarse de que termina con '/'
+        if (!baseHref.endsWith('/')) {
+          baseHref += '/';
+        }
+        mostrarDebug('URL base encontrada desde base href: ' + baseHref);
+        return baseHref;
+      }
+      
+      // Fallback a paths alternativos basados en URL actual
+      var posiblesRutas = [
+        '/',                           // Root del dominio
+        '/f1prode-flutter-webapp/',    // Subpath específico
+        window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) // Directorio actual
+      ];
+      
+      mostrarDebug('No se encontró base href. Usando fallbacks: ' + posiblesRutas.join(', '));
+      return posiblesRutas[1]; // Por defecto usamos /f1prode-flutter-webapp/
+    }
+
+    function cargarFlutterJS(baseUrl) {
+      var urlsAProbar = [
+        baseUrl + 'flutter.js',
+        '/flutter.js',
+        '/f1prode-flutter-webapp/flutter.js',
+        'https://jeffreydtz.github.io/f1prode-flutter-webapp/flutter.js'
+      ];
+      
+      // Eliminar duplicados
+      urlsAProbar = [...new Set(urlsAProbar)];
+      
+      mostrarDebug('Intentando cargar flutter.js desde: ' + urlsAProbar.join(', '));
+      
+      // Intentar cargar flutter.js secuencialmente desde diferentes URLs
+      cargarFlutterJSSecuencial(urlsAProbar, 0, baseUrl);
+    }
+
+    function cargarFlutterJSSecuencial(urls, indice, baseUrl) {
+      if (indice >= urls.length) {
+        mostrarDebug('ERROR: No se pudo cargar flutter.js desde ninguna URL');
+        document.getElementById('flutter_app').innerHTML = '<div style="color: red; padding: 20px; background: #500; margin: 20px; border-radius: 5px; font-family: sans-serif; text-align: center;"><h2>Error al cargar Flutter</h2><p>No se pudo encontrar el archivo flutter.js. Por favor, verifica la configuración del servidor.</p><button onclick="location.reload()" style="padding: 10px 20px; background: #f00; color: white; border: none; border-radius: 5px; cursor: pointer;">Recargar</button></div>';
+        return;
+      }
+      
+      var script = document.createElement('script');
+      script.src = urls[indice];
+      
+      mostrarDebug('Intentando cargar flutter.js desde: ' + urls[indice]);
+      
+      script.onload = function() {
+        mostrarDebug('Carga de flutter.js exitosa desde: ' + urls[indice]);
         
-        scriptTag.src = basePath + "flutter.js";
-        mostrarDebug('Intentando cargar desde: ' + scriptTag.src);
-        
-        document.head.appendChild(scriptTag);
+        // Verificar existencia de manifest.json
+        verificarRecurso(baseUrl + 'manifest.json', function(existe) {
+          if (!existe) {
+            mostrarDebug('ADVERTENCIA: No se pudo encontrar manifest.json en ' + baseUrl + 'manifest.json');
+          }
+          
+          // Iniciar carga de Flutter
+          setTimeout(function() {
+            iniciarFlutter(baseUrl);
+          }, 100);
+        });
       };
       
-      document.head.appendChild(scriptTag);
-    });
+      script.onerror = function() {
+        mostrarDebug('Error al cargar flutter.js desde: ' + urls[indice]);
+        // Probar con la siguiente URL
+        cargarFlutterJSSecuencial(urls, indice + 1, baseUrl);
+      };
+      
+      document.head.appendChild(script);
+    }
+    
+    function verificarRecurso(url, callback) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('HEAD', url, true);
+      xhr.onload = function() {
+        callback(xhr.status !== 404);
+      };
+      xhr.onerror = function() {
+        callback(false);
+      };
+      xhr.send();
+    }
     
     // Función para detectar rutas de reset de contraseña
     function detectResetPasswordRoute() {
@@ -223,14 +329,14 @@
     }
 
     // Función para iniciar Flutter
-    function iniciarFlutter() {
+    function iniciarFlutter(baseUrl) {
       if (typeof _flutter === 'undefined') {
         mostrarDebug('_flutter no está definido. Comprobando alternativas...');
         
         if (typeof window.flutter !== 'undefined') {
           mostrarDebug('Usando la API moderna de Flutter...');
           // Método moderno
-          iniciarFlutterModerno();
+          iniciarFlutterModerno(baseUrl);
           return;
         }
         
@@ -240,6 +346,7 @@
       }
       
       mostrarDebug('Iniciando carga de Flutter con método clásico...');
+      mostrarDebug('URL base para recursos: ' + baseUrl);
       
       // Detectar ruta inicial
       var initialRoute = detectResetPasswordRoute();
@@ -255,15 +362,16 @@
             mostrarDebug('Entrypoint cargado, iniciando engine...');
             
             try {
+              // Limpiar indicador de carga antes de inicializar el engine
+              document.getElementById('flutter_app').innerHTML = '';
+              
               var appRunner = await engineInitializer.initializeEngine({
                 hostElement: document.querySelector('#flutter_app'),
-                initialRoute: initialRoute
+                initialRoute: initialRoute,
+                assetBase: baseUrl + 'assets/',
               });
               
               mostrarDebug('Engine inicializado, ejecutando app...');
-              
-              // Limpiar indicador de carga antes de ejecutar la app
-              document.getElementById('flutter_app').innerHTML = '';
               
               await appRunner.runApp();
               
@@ -281,9 +389,11 @@
     }
     
     // Método moderno para iniciar Flutter (como fallback)
-    async function iniciarFlutterModerno() {
+    async function iniciarFlutterModerno(baseUrl) {
       try {
         mostrarDebug('Intentando cargar Flutter con método moderno...');
+        mostrarDebug('URL base para recursos: ' + baseUrl);
+        
         await flutter.load();
         
         // Detectar ruta inicial
@@ -296,7 +406,8 @@
         // Configurar y ejecutar la aplicación
         const engineInitializer = await flutter.initializeEngine({
           hostElement: document.querySelector('#flutter_app'),
-          initialRoute: initialRoute
+          initialRoute: initialRoute,
+          assetBase: baseUrl + 'assets/',
         });
 
         await engineInitializer.autoStart();
