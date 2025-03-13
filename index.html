@@ -98,27 +98,9 @@
     }
   </style>
 
-  <!-- Script para manejar rutas profundas y redirecciones -->
-  <script>
-    // El path base para GitHub Pages
-    var basePath = '/f1prode-flutter-webapp/';
-    
-    // Verificar si hay un hash en la URL que incluya reset-password
-    window.addEventListener('load', function() {
-      var hash = window.location.hash;
-      
-      // Detectar si el hash contiene reset-password
-      if (hash && hash.includes('reset-password')) {
-        console.log('Detectada ruta de reset password en hash:', hash);
-        
-        // No es necesario hacer más, Flutter router debería manejar el hash
-      }
-    });
-  </script>
-  
   <script>
     // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = "3371258687";
+    const serviceWorkerVersion = "1018576153";
   </script>
   
   <!-- Carga el script de flutter.js con verificación de carga -->
@@ -191,10 +173,44 @@
       mostrarDebug('Hash: ' + window.location.hash);
       mostrarDebug('Path: ' + window.location.pathname);
       
-      // Detectar primero en el hash
+      // Formato específico: "/#/reset-password/MQ/cmm3wd-5a276a95295c7a14044f05380083a580"
+      const resetPasswordRegex = /\/#\/reset-password\/([^\/]+)\/([^\/]+)$/;
+      
+      // Comprueba la URL completa
+      const fullUrlMatch = window.location.href.match(resetPasswordRegex);
+      if (fullUrlMatch) {
+        const uid = fullUrlMatch[1];
+        const token = fullUrlMatch[2];
+        mostrarDebug(`MATCH EXACTO: UID=${uid}, Token=${token}`);
+        return window.location.hash;
+      }
+      
+      // Detectar en el hash (método tradicional)
       if (window.location.hash && window.location.hash.includes('reset-password')) {
         mostrarDebug('Detectada ruta de reset password en hash: ' + window.location.hash);
+        
+        // Verificar formato específico: extraer uid y token
+        var matchResetPassword = window.location.hash.match(/\/reset-password\/([^\/]+)\/([^\/]+)$/);
+        if (matchResetPassword) {
+          var uid = matchResetPassword[1];
+          var token = matchResetPassword[2];
+          mostrarDebug('UID extraído: ' + uid + ', Token extraído: ' + token);
+        }
+        
         return window.location.hash;
+      }
+      
+      // Verificar si la URL completa contiene reset-password (algunos enlaces pueden venir así)
+      if (window.location.href.includes('reset-password')) {
+        mostrarDebug('Detectada ruta de reset password en URL completa');
+        
+        // Extraer la parte después de reset-password
+        var urlParts = window.location.href.split('reset-password');
+        if (urlParts.length > 1) {
+          var resetPath = '/reset-password' + urlParts[1];
+          mostrarDebug('Ruta de reset reconstruida: ' + resetPath);
+          return '#' + resetPath;
+        }
       }
       
       // Intentar detectar en el pathname
