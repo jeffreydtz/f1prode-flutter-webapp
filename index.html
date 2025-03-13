@@ -14,6 +14,7 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
+  <base href="/f1prode-flutter-webapp/">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
@@ -33,10 +34,40 @@
 
   <script>
     // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = "1778999371";
+    const serviceWorkerVersion = "4281794417";
   </script>
-  <script src="flutter.js" defer></script>
+  
+  <!-- Carga el script de flutter.js con verificación de carga -->
   <script>
+    // Primero verificamos que el script de flutter.js esté cargado correctamente
+    document.addEventListener("DOMContentLoaded", function() {
+      console.log('DOM cargado, verificando flutter.js...');
+      
+      // Cargamos el script dinámicamente
+      var scriptTag = document.createElement('script');
+      scriptTag.src = "flutter.js";
+      scriptTag.type = "application/javascript";
+      
+      // Cuando el script cargue correctamente
+      scriptTag.onload = function() {
+        console.log('flutter.js cargado correctamente');
+        // Iniciar la aplicación
+        iniciarFlutter();
+      };
+      
+      // Si hay un error al cargar el script
+      scriptTag.onerror = function() {
+        console.error('Error al cargar flutter.js. Ruta relativa: flutter.js');
+        console.log('Intentando con ruta absoluta...');
+        
+        // Intento con ruta absoluta
+        scriptTag.src = window.location.origin + window.location.pathname + "flutter.js";
+        document.head.appendChild(scriptTag);
+      };
+      
+      document.head.appendChild(scriptTag);
+    });
+    
     // Función para detectar rutas de reset de contraseña
     function detectResetPasswordRoute() {
       console.log('URL actual:', window.location.href);
@@ -58,14 +89,30 @@
       return null;
     }
 
-    window.addEventListener('load', function(ev) {
-      console.log('Iniciando carga de Flutter...');
+    // Función para iniciar Flutter
+    function iniciarFlutter() {
+      if (typeof _flutter === 'undefined') {
+        console.error('_flutter no está definido. Comprobando si window.flutter existe...');
+        
+        if (typeof window.flutter !== 'undefined') {
+          console.log('Usando la API moderna de Flutter...');
+          // Método moderno
+          iniciarFlutterModerno();
+          return;
+        }
+        
+        console.error('No se encuentra ninguna API de Flutter. La aplicación no puede iniciarse.');
+        document.body.innerHTML += '<div style="color: red; padding: 20px; background: #ffeeee; margin: 20px; border-radius: 5px; font-family: sans-serif;">Error: No se pudo cargar Flutter. Por favor, intenta recargar la página.</div>';
+        return;
+      }
+      
+      console.log('Iniciando carga de Flutter con método clásico...');
       
       // Detectar ruta inicial
       var initialRoute = detectResetPasswordRoute();
       console.log('Ruta inicial detectada:', initialRoute);
       
-      // Initialize Flutter using the old method (more compatible)
+      // Initialize Flutter using the old method
       _flutter.loader.loadEntrypoint({
         serviceWorker: {
           serviceWorkerVersion: serviceWorkerVersion,
@@ -84,11 +131,35 @@
           console.log('Aplicación Flutter iniciada correctamente');
         }
       });
-      
-      // Agregar listener para cambios en la URL después de iniciar la app
-      window.addEventListener('hashchange', function() {
-        console.log('Hash cambiado a:', window.location.hash);
-      });
+    }
+    
+    // Método moderno para iniciar Flutter (como fallback)
+    async function iniciarFlutterModerno() {
+      try {
+        console.log('Intentando cargar Flutter con método moderno...');
+        await flutter.load();
+        
+        // Detectar ruta inicial
+        const initialRoute = detectResetPasswordRoute();
+        console.log('Ruta inicial detectada (moderno):', initialRoute);
+
+        // Configurar y ejecutar la aplicación
+        const engineInitializer = await flutter.initializeEngine({
+          hostElement: document.querySelector('#flutter_app'),
+          initialRoute: initialRoute
+        });
+
+        await engineInitializer.autoStart();
+        console.log('Aplicación Flutter iniciada correctamente (moderno)');
+      } catch (e) {
+        console.error('Error al inicializar Flutter (método moderno):', e);
+        document.body.innerHTML += '<div style="color: red; padding: 20px; background: #ffeeee; margin: 20px; border-radius: 5px; font-family: sans-serif;">Error: ' + e.message + '. Por favor, intenta recargar la página.</div>';
+      }
+    }
+    
+    // Agregar listener para cambios en la URL después de iniciar la app
+    window.addEventListener('hashchange', function() {
+      console.log('Hash cambiado a:', window.location.hash);
     });
   </script>
 </head>
