@@ -88,17 +88,16 @@
 
   <script>
     // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = "738779456";
+    const serviceWorkerVersion = "3661941150";
   </script>
   
   <!-- Carga el script de flutter.js con verificación de carga -->
   <script>
-    // Función para depuración - solo muestra en consola sin panel visual
+    // Función para depuración - desactivada completamente
     function mostrarDebug(mensaje) {
-      // Solo mantener la salida a la consola para depuración
-      console.log(mensaje);
-      
-      // El panel visual de depuración ha sido desactivado
+      // Función desactivada completamente - no muestra ningún mensaje
+      // Descomentar la siguiente línea solo durante desarrollo
+      // console.log(mensaje);
     }
     
     document.addEventListener('DOMContentLoaded', function() {
@@ -107,7 +106,6 @@
       
       // Detectar la URL base para cargar recursos correctamente
       var baseUrl = detectarURLBase();
-      mostrarDebug('URL base detectada: ' + baseUrl);
       
       // Intentar cargar flutter.js
       cargarFlutterJS(baseUrl);
