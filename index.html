@@ -88,7 +88,7 @@
 
   <script>
     // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = "3661941150";
+    const serviceWorkerVersion = "719621976";
   </script>
   
   <!-- Carga el script de flutter.js con verificación de carga -->
@@ -339,7 +339,7 @@
               var appRunner = await engineInitializer.initializeEngine({
                 hostElement: document.querySelector('#flutter_app'),
                 initialRoute: initialRoute,
-                assetBase: baseUrl + 'assets/',
+                assetBase: baseUrl,
               });
               
               mostrarDebug('Engine inicializado, ejecutando app...');
@@ -378,7 +378,7 @@
         const engineInitializer = await flutter.initializeEngine({
           hostElement: document.querySelector('#flutter_app'),
           initialRoute: initialRoute,
-          assetBase: baseUrl + 'assets/',
+          assetBase: baseUrl,
         });
 
         await engineInitializer.autoStart();
