@@ -98,6 +98,24 @@
     }
   </style>
 
+  <!-- Script para manejar rutas profundas y redirecciones -->
+  <script>
+    // El path base para GitHub Pages
+    var basePath = '/f1prode-flutter-webapp/';
+    
+    // Verificar si hay un hash en la URL que incluya reset-password
+    window.addEventListener('load', function() {
+      var hash = window.location.hash;
+      
+      // Detectar si el hash contiene reset-password
+      if (hash && hash.includes('reset-password')) {
+        console.log('Detectada ruta de reset password en hash:', hash);
+        
+        // No es necesario hacer más, Flutter router debería manejar el hash
+      }
+    });
+  </script>
+  
   <script>
     // The value below is injected by flutter build, do not touch.
     const serviceWorkerVersion = "3371258687";

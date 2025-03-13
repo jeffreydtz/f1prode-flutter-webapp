@@ -7,26 +7,32 @@
   <script type="text/javascript">
     // Redirigir cualquier ruta a la app principal con el hash
     window.onload = function() {
-      // Detectar si la ruta contiene reset-password
+      // Obtener la ruta completa incluyendo el hash
       var path = window.location.pathname;
-      var isResetPath = path.includes('reset-password');
+      var hash = window.location.hash;
+      var query = window.location.search;
       
       console.log('404 - Ruta detectada:', path);
-      console.log('¿Es ruta de reset?', isResetPath);
+      console.log('Hash detectado:', hash);
       
       // Construir la URL de redirección
       var basePath = '/f1prode-flutter-webapp/';
-      var redirectUrl = basePath;
       
-      if (isResetPath) {
+      // Si ya hay un hash en la URL, usarlo
+      if (hash && hash.length > 0) {
+        // Simplemente redirigir a la base con el hash existente
+        window.location.href = basePath + hash + query;
+      } 
+      // Si la ruta contiene reset-password, convertirla en hash
+      else if (path.includes('reset-password')) {
         // Si es una ruta de reset, agregarla como hash
-        // Formato esperado: /reset-password/uid/token
-        redirectUrl = basePath + '#' + path;
-        console.log('Redirigiendo a:', redirectUrl);
+        window.location.href = basePath + '#' + path + query;
       }
-      
-      // Redirigir
-      window.location.href = redirectUrl;
+      // Cualquier otra ruta
+      else {
+        // Redirigir a la aplicación principal
+        window.location.href = basePath;
+      }
     };
   </script>
 </head>
