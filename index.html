@@ -14,6 +14,7 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
+  <base href="/">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
@@ -33,64 +34,62 @@
 
   <script>
     // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = '"833291621"';
+    const serviceWorkerVersion = "1778999371";
   </script>
-  <!-- This script adds the flutter initialization JS code -->
   <script src="flutter.js" defer></script>
   <script>
-    // Función para detectar y procesar rutas de reset de contraseña
-    function detectAndProcessResetPasswordRoute() {
-      // Verificar si hay una ruta en el hash (modo history)
-      let initialRoute = null;
-      
+    // Función para detectar rutas de reset de contraseña
+    function detectResetPasswordRoute() {
       console.log('URL actual:', window.location.href);
       console.log('Hash:', window.location.hash);
       console.log('Path:', window.location.pathname);
       
-      // Detectar primero en el hash (prioridad, ya que usamos HashUrlStrategy)
+      // Detectar primero en el hash
       if (window.location.hash && window.location.hash.includes('reset-password')) {
         console.log('Detectada ruta de reset password en hash:', window.location.hash);
-        // Usar directamente el hash como ruta inicial
-        initialRoute = window.location.hash;
-        return initialRoute;
+        return window.location.hash;
       }
       
-      // Intentar detectar en el pathname (para URLs sin hash)
+      // Intentar detectar en el pathname
       if (window.location.pathname.includes('reset-password')) {
         console.log('Detectada ruta de reset password en pathname:', window.location.pathname);
-        // Convertir a formato hash
-        initialRoute = '#' + window.location.pathname;
-        return initialRoute;
+        return '#' + window.location.pathname;
       }
       
       return null;
     }
 
-    window.addEventListener('load', async function() {
-      try {
-        // Inicializar Flutter
-        await flutter.load();
-        
-        // Detectar ruta inicial
-        const initialRoute = detectAndProcessResetPasswordRoute();
-        console.log('Ruta inicial detectada:', initialRoute);
-
-        // Configurar y ejecutar la aplicación
-        const engineInitializer = await flutter.initializeEngine({
-          hostElement: document.querySelector('#flutter_app'),
-          initialRoute: initialRoute
-        });
-
-        await engineInitializer.autoStart();
-        console.log('Aplicación Flutter iniciada correctamente');
-        
-        // Agregar listener para cambios en la URL después de iniciar la app
-        window.addEventListener('hashchange', function() {
-          console.log('Hash cambiado a:', window.location.hash);
-        });
-      } catch (e) {
-        console.error('Error al inicializar Flutter:', e);
-      }
+    window.addEventListener('load', function(ev) {
+      console.log('Iniciando carga de Flutter...');
+      
+      // Detectar ruta inicial
+      var initialRoute = detectResetPasswordRoute();
+      console.log('Ruta inicial detectada:', initialRoute);
+      
+      // Initialize Flutter using the old method (more compatible)
+      _flutter.loader.loadEntrypoint({
+        serviceWorker: {
+          serviceWorkerVersion: serviceWorkerVersion,
+        },
+        onEntrypointLoaded: async function(engineInitializer) {
+          console.log('Entrypoint cargado, iniciando engine...');
+          
+          const appRunner = await engineInitializer.initializeEngine({
+            hostElement: document.querySelector('#flutter_app'),
+            initialRoute: initialRoute
+          });
+          
+          console.log('Engine inicializado, ejecutando app...');
+          await appRunner.runApp();
+          
+          console.log('Aplicación Flutter iniciada correctamente');
+        }
+      });
+      
+      // Agregar listener para cambios en la URL después de iniciar la app
+      window.addEventListener('hashchange', function() {
+        console.log('Hash cambiado a:', window.location.hash);
+      });
     });
   </script>
 </head>
