@@ -43136,7 +43136,7 @@ j=A.eo(n)
 i=t.N
 h=A.Z(["Content-Type","application/json","Accept","application/json"],i,i)
 s=7
-return A.z(A.r6(j,B.a4.i2(A.Z(["email",a,"frontend_url","https://jeffreydtz.github.io/f1prodeflutter/#"],i,i),null),h),$async$C6)
+return A.z(A.r6(j,B.a4.i2(A.Z(["email",a,"frontend_url","https://jeffreydtz.github.io/#"],i,i),null),h),$async$C6)
 case 7:m=c
 m.toString
 if(m.b===200){j=A.Z(["success",!0,"message","Se ha enviado un correo para restablecer tu contrase\xf1a"],i,t.z)
