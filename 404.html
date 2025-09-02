@@ -1,37 +1,439 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>F1 Prode - Página no encontrada</title>
-  <script type="text/javascript">
-    // Redirigir cualquier ruta a la app principal con el hash
-    window.onload = function() {
-      // Detectar si la ruta contiene reset-password
-      var path = window.location.pathname;
-      var isResetPath = path.includes('reset-password');
-      
-      console.log('404 - Ruta detectada:', path);
-      console.log('¿Es ruta de reset?', isResetPath);
-      
-      // Construir la URL de redirección
-      var basePath = '/f1prode-flutter-webapp/';
-      var redirectUrl = basePath;
-      
-      if (isResetPath) {
-        // Si es una ruta de reset, agregarla como hash
-        // Formato esperado: /reset-password/uid/token
-        redirectUrl = basePath + '#' + path;
-        console.log('Redirigiendo a:', redirectUrl);
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="/f1prode-flutter-webapp/">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A new Flutter project.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="f1prodeflutter">
+  <link rel="apple-touch-icon" href="./icons/Icon-192.png">
+  <!-- Viewport meta tag para dispositivos móviles -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="./logof1 copy.png"/>
+
+  <title>F1 Prode</title>
+  <link rel="manifest" href="./manifest.json">
+  
+  <!-- Estilos para asegurar que Flutter tenga un contenedor válido -->
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #000000;
+      color: white;
+      position: fixed;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    html {
+      width: 100%;
+      height: 100%;
+    }
+    
+    #flutter_app {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .loading-indicator {
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      font-size: 16px;
+    }
+    
+    .loading-spinner {
+      border: 4px solid rgba(255, 0, 0, 0.3);
+      border-radius: 50%;
+      border-top: 4px solid #ff0000;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    #flutter-debug-info {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      max-width: 80%;
+      z-index: 9999;
+    }
+    
+    /* Estilo para errores */
+    .error-container {
+      color: red;
+      padding: 20px;
+      background: #500;
+      margin: 20px;
+      border-radius: 5px;
+      font-family: sans-serif;
+      text-align: center;
+      max-width: 90%;
+      word-wrap: break-word;
+    }
+    
+    /* Estilos para dispositivos móviles */
+    @media (max-width: 767px) {
+      body {
+        overscroll-behavior: none;
       }
       
-      // Redirigir
-      window.location.href = redirectUrl;
+      .error-container {
+        margin: 10px;
+        padding: 15px;
+      }
+      
+      #flutter-debug-info {
+        font-size: 10px;
+        max-width: 90%;
+      }
+    }
+  </style>
+
+  <script>
+    // The value below is injected by flutter build, do not touch.
+    const serviceWorkerVersion = "1678665748";
+    
+    // Soporte para detección de errores
+    window.onerror = function(message, source, lineno, colno, error) {
+      console.log('Error global capturado: ' + message);
+      showErrorMessage('Error: ' + message);
+      return false;
     };
+    
+    // Soporte para errores de promesas no capturadas
+    window.addEventListener('unhandledrejection', function(event) {
+      console.log('Promesa rechazada: ' + event.reason);
+      showErrorMessage('Error de promesa: ' + event.reason);
+    });
+    
+    // Función para mostrar mensajes de error
+    function showErrorMessage(message) {
+      var container = document.getElementById('flutter_app');
+      if (!container) return;
+      
+      // Limpiar contenido anterior
+      container.innerHTML = '';
+      
+      // Crear contenedor de error
+      var errorDiv = document.createElement('div');
+      errorDiv.className = 'error-container';
+      
+      // Añadir contenido
+      errorDiv.innerHTML = '<h2>Error en la aplicación</h2>' +
+                           '<p>' + message + '</p>' +
+                           '<button onclick="location.reload()" style="padding: 10px 20px; background: #f00; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">Recargar</button>';
+      
+      container.appendChild(errorDiv);
+    }
+  </script>
+  
+  <!-- Carga el script de flutter.js con verificación de carga -->
+  <script>
+    // Crear un elemento para mostrar información de depuración
+    function mostrarDebug(mensaje) {
+      var debugInfo = document.getElementById('flutter-debug-info');
+      if (!debugInfo) {
+        debugInfo = document.createElement('div');
+        debugInfo.id = 'flutter-debug-info';
+        document.body.appendChild(debugInfo);
+      }
+      
+      var p = document.createElement('p');
+      p.textContent = mensaje;
+      debugInfo.appendChild(p);
+      
+      // Limitar a 5 mensajes
+      while (debugInfo.children.length > 5) {
+        debugInfo.removeChild(debugInfo.firstChild);
+      }
+      
+      console.log(mensaje);
+    }
+    
+    // Función para limpiar el caché de la aplicación
+    function clearAppCache() {
+      console.log('Intentando limpiar caché...');
+      
+      if ('caches' in window) {
+        caches.keys().then(function(keyList) {
+          return Promise.all(keyList.map(function(key) {
+            console.log('Eliminando caché: ' + key);
+            return caches.delete(key);
+          }));
+        });
+      }
+      
+      if (localStorage) {
+        try {
+          console.log('Limpiando localStorage...');
+          localStorage.clear();
+        } catch (e) {
+          console.log('Error al limpiar localStorage: ' + e);
+        }
+      }
+      
+      if (sessionStorage) {
+        try {
+          console.log('Limpiando sessionStorage...');
+          sessionStorage.clear();
+        } catch (e) {
+          console.log('Error al limpiar sessionStorage: ' + e);
+        }
+      }
+    }
+    
+    // Primero verificamos que el script de flutter.js esté cargado correctamente
+    document.addEventListener("DOMContentLoaded", function() {
+      console.log('DOM cargado, verificando flutter.js...');
+      
+      // Detectar dispositivo móvil
+      var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        console.log('Dispositivo móvil detectado');
+        // Prevenir comportamientos no deseados en móviles
+        document.addEventListener('touchmove', function(e) {
+          if (e.scale !== 1) { e.preventDefault(); }
+        }, { passive: false });
+        
+        // Evitar zoom en doble toque en dispositivos iOS
+        var lastTouchEnd = 0;
+        document.addEventListener('touchend', function(e) {
+          var now = Date.now();
+          if (now - lastTouchEnd <= 300) {
+            e.preventDefault();
+          }
+          lastTouchEnd = now;
+        }, false);
+      }
+      
+      // Mostrar un indicador de carga
+      var loadingIndicator = document.createElement('div');
+      loadingIndicator.className = 'loading-indicator';
+      loadingIndicator.innerHTML = '<div class="loading-spinner"></div><p>Cargando F1 Prode...</p>';
+      document.getElementById('flutter_app').appendChild(loadingIndicator);
+      
+      // Cargamos el script dinámicamente
+      var scriptTag = document.createElement('script');
+      // Para GitHub Pages, usar la ruta correcta
+      var basePath = window.location.pathname.endsWith('/') ? window.location.pathname : window.location.pathname + '/';
+      scriptTag.src = basePath + "flutter.js";
+      scriptTag.type = "application/javascript";
+      
+      // Tiempo máximo para cargar flutter.js
+      var flutterLoadTimeout = setTimeout(function() {
+        console.log('Tiempo de espera agotado para cargar flutter.js');
+        showErrorMessage('No se pudo cargar la aplicación (timeout). Por favor, intenta recargar la página.');
+      }, 30000);
+      
+      // Cuando el script cargue correctamente
+      scriptTag.onload = function() {
+        clearTimeout(flutterLoadTimeout);
+        console.log('flutter.js cargado correctamente');
+        // Iniciar la aplicación
+        iniciarFlutter();
+      };
+      
+      // Si hay un error al cargar el script
+      scriptTag.onerror = function() {
+        clearTimeout(flutterLoadTimeout);
+        console.log('Error al cargar flutter.js. Intentando con ruta absoluta...');
+        
+        // Intento con ruta absoluta (fallback)
+        console.log('Intentando cargar desde: ' + window.location.origin + window.location.pathname + 'flutter.js');
+        scriptTag.src = "./flutter.js"; // Usar ruta relativa como fallback
+        console.log('Intentando cargar desde: ' + scriptTag.src);
+        
+        var secondAttemptTimeout = setTimeout(function() {
+          showErrorMessage('No se pudo cargar Flutter. Por favor, comprueba tu conexión e intenta recargar.');
+        }, 20000);
+        
+        scriptTag.onload = function() {
+          clearTimeout(secondAttemptTimeout);
+          console.log('flutter.js cargado con ruta absoluta');
+          iniciarFlutter();
+        };
+        
+        scriptTag.onerror = function() {
+          clearTimeout(secondAttemptTimeout);
+          showErrorMessage('Error al cargar Flutter. Por favor, intenta recargar o usa un navegador diferente.');
+        };
+        
+        document.head.appendChild(scriptTag);
+      };
+      
+      document.head.appendChild(scriptTag);
+    });
+    
+    // Función para detectar rutas de reset de contraseña
+    function detectResetPasswordRoute() {
+      console.log('URL actual: ' + window.location.href);
+      console.log('Hash: ' + window.location.hash);
+      console.log('Path: ' + window.location.pathname);
+      
+      // Detectar primero en el hash
+      if (window.location.hash && window.location.hash.includes('reset-password')) {
+        console.log('Detectada ruta de reset password en hash: ' + window.location.hash);
+        return window.location.hash;
+      }
+      
+      // Intentar detectar en el pathname
+      if (window.location.pathname.includes('reset-password')) {
+        console.log('Detectada ruta de reset password en pathname: ' + window.location.pathname);
+        return '#' + window.location.pathname;
+      }
+      
+      return null;
+    }
+
+    // Función para iniciar Flutter
+    function iniciarFlutter() {
+      // Limpiar caché si hay problemas persistentes
+      var hasPreviousError = sessionStorage.getItem('flutter_load_error');
+      if (hasPreviousError) {
+        console.log('Error previo detectado, limpiando caché...');
+        clearAppCache();
+        sessionStorage.removeItem('flutter_load_error');
+      }
+      
+      if (typeof _flutter === 'undefined') {
+        console.log('_flutter no está definido. Comprobando alternativas...');
+        
+        if (typeof window.flutter !== 'undefined') {
+          console.log('Usando la API moderna de Flutter...');
+          // Método moderno
+          iniciarFlutterModerno();
+          return;
+        }
+        
+        console.log('ERROR: No se encuentra ninguna API de Flutter');
+        showErrorMessage('No se pudo cargar Flutter. Intenta recargar la página o usa otro navegador.');
+        sessionStorage.setItem('flutter_load_error', 'true');
+        return;
+      }
+      
+      console.log('Iniciando carga de Flutter con método clásico...');
+      
+      // Detectar ruta inicial
+      var initialRoute = detectResetPasswordRoute();
+      console.log('Ruta inicial detectada: ' + (initialRoute || 'null'));
+      
+      try {
+        // Initialize Flutter using the old method
+        _flutter.loader.loadEntrypoint({
+          serviceWorker: {
+            serviceWorkerVersion: serviceWorkerVersion,
+          },
+          onEntrypointLoaded: async function(engineInitializer) {
+            console.log('Entrypoint cargado, iniciando engine...');
+            
+            try {
+              var appRunner = await engineInitializer.initializeEngine({
+                hostElement: document.querySelector('#flutter_app'),
+                initialRoute: initialRoute
+              });
+              
+              console.log('Engine inicializado, ejecutando app...');
+              
+              // Limpiar indicador de carga antes de ejecutar la app
+              document.getElementById('flutter_app').innerHTML = '';
+              
+              await appRunner.runApp();
+              
+              console.log('Aplicación Flutter iniciada correctamente');
+            } catch (e) {
+              console.log('ERROR al inicializar el engine: ' + e.message);
+              showErrorMessage('Error al inicializar Flutter: ' + e.message);
+              sessionStorage.setItem('flutter_load_error', 'true');
+            }
+          }
+        });
+      } catch (e) {
+        console.log('ERROR en loadEntrypoint: ' + e.message);
+        showErrorMessage('Error al cargar Flutter: ' + e.message);
+        sessionStorage.setItem('flutter_load_error', 'true');
+      }
+    }
+    
+    // Método moderno para iniciar Flutter (como fallback)
+    async function iniciarFlutterModerno() {
+      try {
+        console.log('Intentando cargar Flutter con método moderno...');
+        await flutter.load();
+        
+        // Detectar ruta inicial
+        const initialRoute = detectResetPasswordRoute();
+        console.log('Ruta inicial detectada (moderno): ' + (initialRoute || 'null'));
+
+        // Limpiar indicador de carga antes de inicializar el engine
+        document.getElementById('flutter_app').innerHTML = '';
+        
+        // Configurar y ejecutar la aplicación
+        const engineInitializer = await flutter.initializeEngine({
+          hostElement: document.querySelector('#flutter_app'),
+          initialRoute: initialRoute
+        });
+
+        await engineInitializer.autoStart();
+        console.log('Aplicación Flutter iniciada correctamente (moderno)');
+      } catch (e) {
+        console.log('ERROR al inicializar Flutter (método moderno): ' + e.message);
+        showErrorMessage('Error al inicializar Flutter: ' + e.message);
+        sessionStorage.setItem('flutter_load_error', 'true');
+      }
+    }
+    
+    // Agregar listener para cambios en la URL después de iniciar la app
+    window.addEventListener('hashchange', function() {
+      console.log('Hash cambiado a: ' + window.location.hash);
+    });
   </script>
 </head>
 <body>
-  <h2>Redirigiendo...</h2>
-  <p>Estás siendo redirigido a la aplicación principal.</p>
+  <div id="flutter_app"></div>
 </body>
-</html> 
+</html>
