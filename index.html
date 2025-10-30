@@ -319,8 +319,8 @@
 
         var bootstrapScript = document.createElement('script');
         bootstrapScript.type = 'application/javascript';
-        // Use document.baseURI consistently with flutter.js loading
-        var bootstrapPath = new URL('flutter_bootstrap.js', document.baseURI).href;
+        // Use relative path that works with GitHub Pages
+        var bootstrapPath = './flutter_bootstrap.js';
         console.log('Intentando cargar flutter_bootstrap.js desde: ' + bootstrapPath);
         bootstrapScript.src = bootstrapPath;
         bootstrapScript.dataset.flutterBootstrap = 'true';
@@ -408,9 +408,8 @@
       
       // Cargamos el script dinámicamente
       var scriptTag = document.createElement('script');
-      // Para GitHub Pages, usar la ruta correcta
-      var basePath = window.location.pathname.endsWith('/') ? window.location.pathname : window.location.pathname + '/';
-      scriptTag.src = basePath + "flutter.js";
+      // Use relative path for consistency
+      scriptTag.src = "./flutter.js";
       scriptTag.type = "application/javascript";
       
       // Tiempo máximo para cargar flutter.js
@@ -435,34 +434,8 @@
       // Si hay un error al cargar el script
       scriptTag.onerror = function() {
         clearTimeout(flutterLoadTimeout);
-        console.log('Error al cargar flutter.js. Intentando con ruta absoluta...');
-        
-        // Intento con ruta absoluta (fallback)
-        console.log('Intentando cargar desde: ' + window.location.origin + window.location.pathname + 'flutter.js');
-        scriptTag.src = "./flutter.js"; // Usar ruta relativa como fallback
-        console.log('Intentando cargar desde: ' + scriptTag.src);
-        
-        var secondAttemptTimeout = setTimeout(function() {
-          showErrorMessage('No se pudo cargar Flutter. Por favor, comprueba tu conexión e intenta recargar.');
-        }, 20000);
-        
-        scriptTag.onload = function() {
-          clearTimeout(secondAttemptTimeout);
-          console.log('flutter.js cargado con ruta absoluta');
-          loadFlutterBootstrap()
-            .then(() => iniciarFlutter())
-            .catch(function(error) {
-              console.log('ERROR al cargar flutter_bootstrap.js (fallback): ' + error);
-              showErrorMessage('No se pudo inicializar la aplicación (bootstrap). Intenta recargar.');
-            });
-        };
-        
-        scriptTag.onerror = function() {
-          clearTimeout(secondAttemptTimeout);
-          showErrorMessage('Error al cargar Flutter. Por favor, intenta recargar o usa un navegador diferente.');
-        };
-        
-        document.head.appendChild(scriptTag);
+        console.log('Error al cargar flutter.js');
+        showErrorMessage('No se pudo cargar Flutter. Por favor, comprueba tu conexión e intenta recargar.');
       };
       
       document.head.appendChild(scriptTag);
