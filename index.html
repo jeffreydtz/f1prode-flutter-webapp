@@ -14,7 +14,7 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
-  <base href="/f1prode-flutter-webapp/">
+  <base href="/f1prodeflutter/">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
@@ -249,7 +249,7 @@
 
   <script>
     // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = '"4132307384"';
+    const serviceWorkerVersion = '"2303739062"';
     
     // Soporte para detección de errores
     window.onerror = function(message, source, lineno, colno, error) {
@@ -319,8 +319,8 @@
 
         var bootstrapScript = document.createElement('script');
         bootstrapScript.type = 'application/javascript';
-        // Use relative path that works with GitHub Pages
-        var bootstrapPath = './flutter_bootstrap.js';
+        // Use document.baseURI consistently with flutter.js loading
+        var bootstrapPath = new URL('flutter_bootstrap.js', document.baseURI).href;
         console.log('Intentando cargar flutter_bootstrap.js desde: ' + bootstrapPath);
         bootstrapScript.src = bootstrapPath;
         bootstrapScript.dataset.flutterBootstrap = 'true';
@@ -377,7 +377,7 @@
 
       var faviconLink = document.querySelector('link[rel="icon"]');
       if (faviconLink) {
-        faviconLink.href = './logof1.png';
+        faviconLink.href = new URL('logof1.png', document.baseURI).toString();
       }
       
       // Detectar dispositivo móvil
@@ -408,8 +408,9 @@
       
       // Cargamos el script dinámicamente
       var scriptTag = document.createElement('script');
-      // Use relative path for consistency
-      scriptTag.src = "./flutter.js";
+      // Para GitHub Pages, usar la ruta correcta
+      var basePath = window.location.pathname.endsWith('/') ? window.location.pathname : window.location.pathname + '/';
+      scriptTag.src = basePath + "flutter.js";
       scriptTag.type = "application/javascript";
       
       // Tiempo máximo para cargar flutter.js
@@ -434,8 +435,34 @@
       // Si hay un error al cargar el script
       scriptTag.onerror = function() {
         clearTimeout(flutterLoadTimeout);
-        console.log('Error al cargar flutter.js');
-        showErrorMessage('No se pudo cargar Flutter. Por favor, comprueba tu conexión e intenta recargar.');
+        console.log('Error al cargar flutter.js. Intentando con ruta absoluta...');
+        
+        // Intento con ruta absoluta (fallback)
+        console.log('Intentando cargar desde: ' + window.location.origin + window.location.pathname + 'flutter.js');
+        scriptTag.src = "./flutter.js"; // Usar ruta relativa como fallback
+        console.log('Intentando cargar desde: ' + scriptTag.src);
+        
+        var secondAttemptTimeout = setTimeout(function() {
+          showErrorMessage('No se pudo cargar Flutter. Por favor, comprueba tu conexión e intenta recargar.');
+        }, 20000);
+        
+        scriptTag.onload = function() {
+          clearTimeout(secondAttemptTimeout);
+          console.log('flutter.js cargado con ruta absoluta');
+          loadFlutterBootstrap()
+            .then(() => iniciarFlutter())
+            .catch(function(error) {
+              console.log('ERROR al cargar flutter_bootstrap.js (fallback): ' + error);
+              showErrorMessage('No se pudo inicializar la aplicación (bootstrap). Intenta recargar.');
+            });
+        };
+        
+        scriptTag.onerror = function() {
+          clearTimeout(secondAttemptTimeout);
+          showErrorMessage('Error al cargar Flutter. Por favor, intenta recargar o usa un navegador diferente.');
+        };
+        
+        document.head.appendChild(scriptTag);
       };
       
       document.head.appendChild(scriptTag);
