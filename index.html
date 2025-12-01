@@ -14,7 +14,7 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
-  <base href="/f1prode-flutter-webapp/">
+  <base href="/f1prodeflutter/">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
@@ -25,7 +25,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="f1prodeflutter">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/Icon-192.png">
   <!-- Viewport meta tag para dispositivos móviles -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
@@ -249,7 +249,7 @@
 
   <script>
     // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = '"2303739062"';
+    const serviceWorkerVersion = '"561729391"';
     
     // Soporte para detección de errores
     window.onerror = function(message, source, lineno, colno, error) {
@@ -374,8 +374,9 @@
     // Primero verificamos que el script de flutter.js esté cargado correctamente
     document.addEventListener("DOMContentLoaded", function() {
       console.log('DOM cargado, verificando flutter.js...');
-      console.log('Base URI: ' + document.baseURI);
 
+      console.log('Base URI: ' + document.baseURI);
+      
       // Configurar favicon dinámicamente
       var faviconLink = document.getElementById('favicon-link');
       if (faviconLink) {
